@@ -1,0 +1,12 @@
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MDk0MzE5MCwianRpIjoiMDkwODQyZjYtYjU5Mi00Mzk0LWExZDktZWY3Y2I5ZDczMzBjIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MiwibmJmIjoxNzUwOTQzMTkwLCJleHAiOjE3NTEwMjk1OTB9.KN11HuBM-n3RsCDQ9qS6xXHtxAbYE5Gi40xxEpu8gPQ",
+  "message": "Login successful",
+  "session_id": "1348f854-ad84-4711-9fd2-f282b9ceec7c",
+  "user": {
+    "created_at": "2025-06-26T12:27:59.219352",
+    "email": "demo@example.com",
+    "id": 2,
+    "is_active": true,
+    "username": "demo_user"
+  }
+}

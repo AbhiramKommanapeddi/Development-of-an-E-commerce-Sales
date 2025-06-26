@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Authentication</title>
+</head>
+<body>
+    <h1>Debug Authentication</h1>
+    <button onclick="testLogin()">Test Login</button>
+    <button onclick="testChatbot()">Test Chatbot</button>
+    <button onclick="checkToken()">Check Token</button>
+    <div id="output"></div>
+
+    <script>
+        const baseURL = 'http://localhost:5000/api';
+        let token = null;
+
+        function log(message) {
+            document.getElementById('output').innerHTML += '<p>' + message + '</p>';
+        }
+
+        async function testLogin() {
+            try {
+                log('🔐 Testing login...');
+                const response = await fetch(`${baseURL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'demo_user', password: 'demo123' })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    token = data.access_token;
+                    log('✅ Login successful!');
+                    log('Token: ' + token.substring(0, 50) + '...');
+                    log('User: ' + JSON.stringify(data.user));
+                } else {
+                    log('❌ Login failed: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                log('❌ Login error: ' + error.message);
+            }
+        }
+
+        async function testChatbot() {
+            if (!token) {
+                log('❌ No token available. Please login first.');
+                return;
+            }
+
+            try {
+                log('🤖 Testing chatbot...');
+                log('Using token: ' + token.substring(0, 50) + '...');
+                
+                const response = await fetch(`${baseURL}/chatbot/message`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message: 'Hello test' })
+                });
+                
+                log('Response status: ' + response.status);
+                log('Response headers: ' + JSON.stringify(Object.fromEntries(response.headers.entries())));
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('✅ Chatbot response: ' + data.bot_response);
+                } else {
+                    log('❌ Chatbot failed: ' + JSON.stringify(data));
+                }
+            } catch (error) {
+                log('❌ Chatbot error: ' + error.message);
+            }
+        }
+
+        function checkToken() {
+            if (token) {
+                log('Token exists: ' + token.substring(0, 50) + '...');
+                try {
+                    const parts = token.split('.');
+                    const payload = JSON.parse(atob(parts[1]));
+                    log('Token payload: ' + JSON.stringify(payload, null, 2));
+                } catch (e) {
+                    log('❌ Token decode error: ' + e.message);
+                }
+            } else {
+                log('❌ No token available');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce Sales Chatbot</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <div class="loader-spinner"></div>
+            <p>Loading your shopping assistant...</p>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="auth-title">Welcome Back</h2>
+                <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-username">Username or Email</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <p class="auth-switch">
+                        Don't have an account? 
+                        <a href="#" onclick="switchToRegister()">Sign up here</a>
+                    </p>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form hidden">
+                    <div class="form-group">
+                        <label for="register-username">Username</label>
+                        <input type="text" id="register-username" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirm Password</label>
+                        <input type="password" id="register-confirm-password" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                    <p class="auth-switch">
+                        Already have an account? 
+                        <a href="#" onclick="switchToLogin()">Login here</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app hidden">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    <span>ShopBot</span>
+                </div>
+                <div class="header-actions">
+                    <div class="user-info">
+                        <span id="user-name">User</span>
+                        <div class="user-menu">
+                            <button class="user-menu-btn" onclick="toggleUserMenu()">
+                                <i class="fas fa-user-circle"></i>
+                            </button>
+                            <div id="user-dropdown" class="user-dropdown hidden">
+                                <a href="#" onclick="showProfile()">
+                                    <i class="fas fa-user"></i> Profile
+                                </a>
+                                <a href="#" onclick="showChatHistory()">
+                                    <i class="fas fa-history"></i> Chat History
+                                </a>
+                                <a href="#" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Shopping Assistant</h3>
+                    <button id="new-chat-btn" class="btn btn-secondary" onclick="startNewChat()">
+                        <i class="fas fa-plus"></i> New Chat
+                    </button>
+                </div>
+                
+                <div class="quick-actions">
+                    <h4>Quick Actions</h4>
+                    <div id="quick-actions-list" class="quick-actions-list">
+                        <!-- Quick actions will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="chat-sessions">
+                    <h4>Recent Chats</h4>
+                    <div id="chat-sessions-list" class="chat-sessions-list">
+                        <!-- Chat sessions will be loaded here -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Chat Area -->
+            <section class="chat-container">
+                <div class="chat-header">
+                    <h2>
+                        <i class="fas fa-comments"></i>
+                        Chat with ShopBot
+                    </h2>
+                    <div class="chat-actions">
+                        <button class="btn btn-outline" onclick="clearChat()" title="Clear Chat">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="btn btn-outline" onclick="exportChat()" title="Export Chat">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="chat-messages" class="chat-messages">
+                    <div class="welcome-message">
+                        <div class="bot-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            <h3>Welcome to ShopBot! 🛍️</h3>
+                            <p><strong>Please login first to start chatting.</strong></p>
+                            <p>I'm here to help you find the perfect products. After logging in, you can:</p>
+                            <ul>
+                                <li>Search for specific items: "Show me laptops under $1000"</li>
+                                <li>Get recommendations: "What's popular in electronics?"</li>
+                                <li>Filter by categories: "Find Nike shoes"</li>
+                                <li>Ask for help: "What can you do?"</li>
+                            </ul>
+                            <p>Demo credentials: <code>demo_user</code> / <code>demo123</code></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <form id="chat-form" class="chat-form">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                id="chat-input" 
+                                placeholder="Ask me about products... (e.g., 'Show me smartphones under $500')"
+                                autocomplete="off"
+                                maxlength="500"
+                            >
+                            <button type="submit" class="send-btn" disabled>
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="input-footer">
+                            <span class="char-count">0/500</span>
+                            <div class="input-actions">
+                                <button type="button" class="btn btn-sm" onclick="showSampleQueries()" title="Sample Queries">
+                                    <i class="fas fa-lightbulb"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm" onclick="toggleVoiceInput()" title="Voice Input">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Product Display Panel -->
+            <section id="product-panel" class="product-panel hidden">
+                <div class="product-panel-header">
+                    <h3>
+                        <i class="fas fa-shopping-bag"></i>
+                        Products
+                    </h3>
+                    <button class="close-panel-btn" onclick="closeProductPanel()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="product-list" class="product-list">
+                    <!-- Products will be displayed here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content product-modal-content">
+            <div class="modal-header">
+                <h2 id="product-modal-title">Product Details</h2>
+                <button class="close-btn" onclick="closeProductModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="product-detail-content">
+                    <!-- Product details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sample Queries Modal -->
+    <div id="sample-queries-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sample Queries</h2>
+                <button class="close-btn" onclick="closeSampleQueriesModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="sample-queries">
+                    <div class="query-category">
+                        <h4>Product Search</h4>
+                        <div class="query-examples">
+                            <button class="query-btn" onclick="useQuery('Show me laptops under $1000')">
+                                "Show me laptops under $1000"
+                            </button>
+                            <button class="query-btn" onclick="useQuery('I need a smartphone with good camera')">
+                                "I need a smartphone with good camera"
+                            </button>
+                            <button class="query-btn" onclick="useQuery('Find Nike shoes in size 10')">
+                                "Find Nike shoes in size 10"
+                            </button>
+                        </div>
+                    </div>
+                    <div class="query-category">
+                        <h4>Recommendations</h4>
+                        <div class="query-examples">
+                            <button class="query-btn" onclick="useQuery('What do you recommend?')">
+                                "What do you recommend?"
+                            </button>
+                            <button class="query-btn" onclick="useQuery('Show me top rated products')">
+                                "Show me top rated products"
+                            </button>
+                            <button class="query-btn" onclick="useQuery('What\'s popular in electronics?')">
+                                "What's popular in electronics?"
+                            </button>
+                        </div>
+                    </div>
+                    <div class="query-category">
+                        <h4>Price Filtering</h4>
+                        <div class="query-examples">
+                            <button class="query-btn" onclick="useQuery('Show me products under $50')">
+                                "Show me products under $50"
+                            </button>
+                            <button class="query-btn" onclick="useQuery('Find gifts between $20 and $100')">
+                                "Find gifts between $20 and $100"
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
